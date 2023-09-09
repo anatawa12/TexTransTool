@@ -8,21 +8,14 @@ namespace net.rs64.TexTransCore.TransTextureCore
     /// </summary>
     public interface IRendererWriter
     {
-        // TODO: make ChangeMaterialForRenderers extension method and provide lower level API for in interface
-        void ChangeMaterialForRenderers(IEnumerable<Renderer> renderers, Material target, Material replacement);
-        void ChangeMaterialForRenderers(IEnumerable<Renderer> renderers, Dictionary<Material, Material> mapping);
         void SetMesh(Renderer renderer, Mesh mesh);
+        void SetMaterials(Renderer renderer, Material[] materials);
     }
 
-    public class DefaultRendererWriter : IRendererWriter
+    public static class RendererWriterExtensions
     {
-        public static IRendererWriter Instance = new DefaultRendererWriter();
-
-        private DefaultRendererWriter()
-        {
-        }
-
-        public void ChangeMaterialForRenderers(IEnumerable<Renderer> renderers, Material target, Material replacement)
+        public static void ChangeMaterialForRenderers(this IRendererWriter writer, 
+            IEnumerable<Renderer> renderers, Material target, Material replacement)
         {
             foreach (var renderer in renderers)
             {
@@ -41,20 +34,21 @@ namespace net.rs64.TexTransCore.TransTextureCore
 
                 if (modified)
                 {
-                    renderer.sharedMaterials = materials;
+                    writer.SetMaterials(renderer, materials);
                 }
             }
         }
-
-        public void ChangeMaterialForRenderers(IEnumerable<Renderer> Renderer, Dictionary<Material, Material> MatPairs)
+        
+        public static void ChangeMaterialForRenderers(this IRendererWriter writer, 
+            IEnumerable<Renderer> renderers, Dictionary<Material, Material> mapping)
         {
-            foreach (var renderer in Renderer)
+            foreach (var renderer in renderers)
             {
                 var materials = renderer.sharedMaterials;
                 var modified = false;
                 for (var index = 0; index < materials.Length; index++)
                 {
-                    if (MatPairs.TryGetValue(materials[index], out var replacement))
+                    if (mapping.TryGetValue(materials[index], out var replacement))
                     {
                         materials[index] = replacement;
                         modified = true;
@@ -62,9 +56,18 @@ namespace net.rs64.TexTransCore.TransTextureCore
                 }
                 if (modified)
                 {
-                    renderer.sharedMaterials = materials;
+                    writer.SetMaterials(renderer, materials);
                 }
             }
+        }
+    }
+
+    public class DefaultRendererWriter : IRendererWriter
+    {
+        public static IRendererWriter Instance = new DefaultRendererWriter();
+
+        private DefaultRendererWriter()
+        {
         }
 
         public void SetMesh(Renderer renderer, Mesh mesh)
@@ -86,5 +89,7 @@ namespace net.rs64.TexTransCore.TransTextureCore
                     break;
             }
         }
+
+        public void SetMaterials(Renderer renderer, Material[] materials) => renderer.sharedMaterials = materials;
     }
 }

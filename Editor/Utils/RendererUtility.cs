@@ -28,48 +28,7 @@ namespace net.rs64.TexTransTool.Utils
                 startOffset += takeLength;
             }
         }
-        public static void ChangeMaterialForRenderers(IEnumerable<Renderer> Renderer, Dictionary<Material, Material> MatPairs)
-        {
-            foreach (var renderer in Renderer)
-            {
-                var materials = renderer.sharedMaterials;
-                var isEdit = false;
-                foreach (var Index in Enumerable.Range(0, materials.Length))
-                {
-                    var distMat = materials[Index];
-                    if (MatPairs.ContainsKey(distMat))
-                    {
-                        materials[Index] = MatPairs[distMat];
-                        isEdit = true;
-                    }
-                }
-                if (isEdit)
-                {
-                    renderer.sharedMaterials = materials;
-                }
-            }
-        }
-        public static void ChangeMaterialForRenderers(IEnumerable<Renderer> Renderers, Material target, Material set)
-        {
-            foreach (var renderer in Renderers)
-            {
-                var materials = renderer.sharedMaterials;
-                var isEdit = false;
-                foreach (var index in Enumerable.Range(0, materials.Length))
-                {
-                    var distMat = materials[index];
-                    if (target == distMat)
-                    {
-                        materials[index] = set;
-                        isEdit = true;
-                    }
-                }
-                if (isEdit)
-                {
-                    renderer.sharedMaterials = materials;
-                }
-            }
-        }
+
         public static void ChangeMaterialForSerializedProperty(Dictionary<Material, Material> MatMapping, GameObject targetRoot, Type[] IgnoreTypes = null)
         {
             var allComponent = targetRoot.GetComponentsInChildren<Component>();
@@ -143,6 +102,8 @@ namespace net.rs64.TexTransTool.Utils
             }
             return mesh;
         }
+
+        // Remove once revert logic is removed
         public static void SetMesh(this Renderer Target, Mesh SetTarget)
         {
             switch (Target)

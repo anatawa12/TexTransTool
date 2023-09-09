@@ -5,6 +5,7 @@ using UnityEngine;
 using static net.rs64.TexTransTool.TextureLayerUtil;
 using UnityEditor;
 using System;
+using JetBrains.Annotations;
 using net.rs64.TexTransTool.Build;
 using net.rs64.TexTransTool.Utils;
 using net.rs64.TexTransCore.TransTextureCore;
@@ -16,6 +17,9 @@ namespace net.rs64.TexTransTool
     public class AvatarDomain
     {
         static Type[] IgnoreTypes = new Type[] { typeof(Transform), typeof(AvatarDomainDefinition) };
+
+        [NotNull] public readonly IRendererWriter RendererWriter;
+
         /*
         AssetSaverがtrueのとき
         渡されたアセットはすべて保存する。
@@ -26,8 +30,13 @@ namespace net.rs64.TexTransTool
         基本テクスチャは圧縮して渡す
         ただし、スタックに入れるものは圧縮の必要はない。
         */
-        public AvatarDomain(GameObject avatarRoot, bool AssetSaver = false, bool generateCustomMipMap = false, UnityEngine.Object OverrideAssetContainer = null)
+        public AvatarDomain(GameObject avatarRoot, 
+            bool AssetSaver = false, 
+            bool generateCustomMipMap = false, 
+            UnityEngine.Object OverrideAssetContainer = null,
+            IRendererWriter rendererWriter = null)
         {
+            RendererWriter = rendererWriter ?? DefaultRendererWriter.Instance;
             _avatarRoot = avatarRoot;
             _renderers = avatarRoot.GetComponentsInChildren<Renderer>(true).ToList();
             _initialMaterials = RendererUtility.GetMaterials(_renderers);
@@ -94,13 +103,13 @@ namespace net.rs64.TexTransTool
         {
             if (isPaired)
             {
-                RendererUtility.ChangeMaterialForRenderers(_renderers, Target, SetMat);
+                RendererWriter.ChangeMaterialForRenderers(_renderers, Target, SetMat);
                 if(_mapDict == null) _mapDict = new FlatMapDict<Material>();
                 _mapDict.Add(Target, SetMat);
             }
             else
             {
-                RendererUtility.ChangeMaterialForRenderers(_renderers, Target, SetMat);
+                RendererWriter.ChangeMaterialForRenderers(_renderers, Target, SetMat);
             }
 
             transferAsset(SetMat);

@@ -58,10 +58,6 @@ namespace net.rs64.TexTransTool.Decal
                 var dictMat = GetDecalTextureSetMaterial(decalBlendTextures, materials, TargetPropertyName);
 
                 DefaultRendererWriter.Instance.ChangeMaterialForRenderers(TargetRenderers, dictMat);
-                var listMatPea = MatPair.ConvertMatPairList(dictMat);
-                localSave = new DecalDataContainer();
-                localSave.GenerateMaterials = listMatPea;
-                localSave.DecalBlendTextures = decalBlendTextures.Values.ToList();
             }
             _IsApply = true;
         }
@@ -109,27 +105,6 @@ namespace net.rs64.TexTransTool.Decal
         }
 
         public abstract Dictionary<Texture2D, Texture> CompileDecal();
-
-        [SerializeField] DecalDataContainer localSave;
-
-        public override void Revert(AvatarDomain avatarMaterialDomain = null)
-        {
-            if (!_IsApply) return;
-            _IsApply = false;
-
-            if (avatarMaterialDomain != null)
-            {
-                //何もすることはない。
-            }
-            else
-            {
-                var revertList = MatPair.ConvertMatDict(MatPair.SwitchingList(localSave.GenerateMaterials));
-                avatarMaterialDomain.RendererWriter.ChangeMaterialForRenderers(TargetRenderers, revertList);
-                localSave = null;
-            }
-            IsSelfCallApply = false;
-
-        }
 
         [ContextMenu("ExtractDecalCompiledTexture")]
         public void ExtractDecalCompiledTexture()

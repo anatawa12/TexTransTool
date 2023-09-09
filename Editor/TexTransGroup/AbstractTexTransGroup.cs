@@ -44,25 +44,11 @@ namespace net.rs64.TexTransTool
             }
             catch (Exception ex)
             {
-                Revert(AvatarMaterialDomain);
+                // TODO: Call Revert logic: Revert(AvatarMaterialDomain);
                 throw ex;
             }
         }
         public static IEnumerable<TextureTransformer> TextureTransformerFilter(IEnumerable<TextureTransformer> Targets) => Targets.Where(tf => tf != null && tf.ThisEnable);
-        public override void Revert(AvatarDomain AvatarMaterialDomain = null)
-        {
-            if (!_IsApply) return;
-            _IsApply = false;
-            IsSelfCallApply = false;
-
-            foreach (var tf in Targets.Reverse())
-            {
-                if (tf == null) continue;
-                if (tf.ThisEnable == false) continue;
-                tf.Revert(AvatarMaterialDomain);
-                EditorUtility.SetDirty(tf);
-            }
-        }
 
         bool PossibleApplyCheck()
         {

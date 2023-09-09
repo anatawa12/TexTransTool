@@ -29,7 +29,7 @@ namespace net.rs64.TexTransTool.Editor
                     EditorGUI.BeginDisabledGroup(!Target.IsSelfCallApply);
                     if (GUILayout.Button("Revert"))
                     {
-                        Target.Revert();
+                        // TODO: call revert logic: Target.Revert();
                         EditorUtility.SetDirty(Target);
 
                     }

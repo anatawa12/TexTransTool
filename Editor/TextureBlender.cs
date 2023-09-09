@@ -45,24 +45,12 @@ namespace net.rs64.TexTransTool
                 var newBlendTex = TextureLayerUtil.BlendBlit(DistTex, BlendTexture, BlendType).CopyTexture2D();
                 Container.BlendTextures = newBlendTex;
 
-                var ChangeDict = avatarMaterialDomain.SetTexture(DistTex, newBlendTex);
-                Container.GenerateMaterials = ChangeDict;
+                avatarMaterialDomain.SetTexture(DistTex, newBlendTex);
             }
             else
             {
                 avatarMaterialDomain.AddTextureStack(DistTex, new TextureLayerUtil.BlendTextures(AddTex, BlendType));
             }
-        }
-
-
-        public override void Revert(AvatarDomain avatarMaterialDomain = null)
-        {
-            if (!_IsApply) return;
-            _IsApply = false;
-            if (avatarMaterialDomain == null) avatarMaterialDomain = new AvatarDomain(TargetRenderer.gameObject);
-            IsSelfCallApply = false;
-
-            avatarMaterialDomain.SetMaterials(MatPair.SwitchingList(Container.GenerateMaterials), true);
         }
     }
 

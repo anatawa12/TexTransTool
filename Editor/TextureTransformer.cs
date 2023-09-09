@@ -14,7 +14,6 @@ namespace net.rs64.TexTransTool
         [HideInInspector,SerializeField] int _saveDataVersion = ToolUtils.ThiSaveDataVersion;
         public int SaveDataVersion => _saveDataVersion;
         public abstract void Apply(AvatarDomain avatarMaterialDomain = null);
-        public abstract void Revert(AvatarDomain avatarMaterialDomain = null);
         public virtual void SelfCallApply(AvatarDomain avatarMaterialDomain = null)
         {
             IsSelfCallApply = true;

@@ -63,7 +63,7 @@ namespace net.rs64.TexTransTool.Build
             if (!texTransGroup.IsApply) return;
             _IsSelfCallApply = false;
             CacheDomain.ResetMaterial();
-            texTransGroup.Revert(CacheDomain);
+            // TODO: Call Revert logic: texTransGroup.Revert(CacheDomain);
             AssetSaveHelper.DeleteAsset(CacheDomain.Asset);
             CacheDomain = null;
         }

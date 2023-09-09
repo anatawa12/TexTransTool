@@ -230,8 +230,6 @@ namespace net.rs64.TexTransTool.TextureAtlas
             return true;
         }
 
-        public AvatarDomain RevertDomain;
-        public List<MeshPair> RevertMeshes;
         public override void Apply(AvatarDomain avatarMaterialDomain = null)
         {
             var result = CompileAtlasTextures();
@@ -239,8 +237,7 @@ namespace net.rs64.TexTransTool.TextureAtlas
             if (!Container.IsPossibleApply) { return; }
 
             var nowRenderers = Renderers;
-            if (avatarMaterialDomain == null) { avatarMaterialDomain = new AvatarDomain(TargetRoot); RevertDomain = avatarMaterialDomain; }
-            else { RevertDomain = avatarMaterialDomain.GetBackUp(); }
+            if (avatarMaterialDomain == null) { avatarMaterialDomain = new AvatarDomain(TargetRoot); }
             Container.GenerateMaterials = null;
 
             var generateMaterials = new List<List<Material>>();
@@ -256,7 +253,6 @@ namespace net.rs64.TexTransTool.TextureAtlas
             if (AtlasSettings.Count != atlasTextures.Count || AtlasSettings.Count != channelMatRef.Count) { return; }
 
 
-            var nawChannelRevertMeshes = new List<MeshPair>();
             foreach (var renderer in nowRenderers)
             {
                 var mesh = renderer.GetMesh();
@@ -270,7 +266,6 @@ namespace net.rs64.TexTransTool.TextureAtlas
 
                 avatarMaterialDomain.RendererWriter.SetMesh(renderer, targetMeshData.Mesh);
                 avatarMaterialDomain.transferAsset(targetMeshData.Mesh);
-                nawChannelRevertMeshes.Add(new MeshPair(mesh, targetMeshData.Mesh));
             }
 
 
@@ -321,39 +316,7 @@ namespace net.rs64.TexTransTool.TextureAtlas
             }
 
             Container.GenerateMaterials = generateMaterials;
-            RevertMeshes = nawChannelRevertMeshes;
             _isApply = true;
-        }
-
-        public override void Revert(AvatarDomain avatarMaterialDomain = null)
-        {
-            if (!IsApply) return;
-            _isApply = false;
-            IsSelfCallApply = false;
-
-            RevertDomain.ResetMaterial();
-            RevertDomain = null;
-
-            var nowRenderers = Renderers;
-
-            var revertMeshDict = new Dictionary<Mesh, Mesh>();
-            foreach (var meshPair in RevertMeshes)
-            {
-                if (!revertMeshDict.ContainsKey(meshPair.SecondMesh))
-                {
-                    revertMeshDict.Add(meshPair.SecondMesh, meshPair.Mesh);
-                }
-            }
-
-
-            foreach (var renderer in nowRenderers)
-            {
-                var mesh = renderer.GetMesh();
-                if (revertMeshDict.ContainsKey(mesh))
-                {
-                    renderer.SetMesh(revertMeshDict[mesh]);
-                }
-            }
         }
 
         private void TransMoveRectIsland(Texture SouseTex, RenderTexture targetRT, List<(Island, Island)> islandPairs, float padding)
@@ -542,8 +505,6 @@ namespace net.rs64.TexTransTool.TextureAtlas
                 Container.IsPossibleApply = false;
                 Container.GenerateMaterials = null;
             }
-            RevertMeshes = null;
-            RevertDomain = null;
         }
     }
     public class AtlasData
